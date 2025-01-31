@@ -16,5 +16,4 @@ object ConfigManager {
         val message = prefix + SecurityCamera.INSTANCE.config.getString(path)
         return message.toMini()
     }
-    fun reloadConfig() = SecurityCamera.INSTANCE.reloadConfig()
 }

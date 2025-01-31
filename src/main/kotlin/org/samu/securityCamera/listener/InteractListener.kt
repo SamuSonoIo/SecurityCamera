@@ -19,7 +19,7 @@ class InteractListener {
         if (clickedBlock == null) return@event
         if (PlayerCache.isWatching(player)) isCancelled = true
 
-        val location = clickedBlock?.location?.clone()?.apply { y -= 2 }!!
+        val location = clickedBlock?.location?.clone()?.apply { y -= 3 }!!
         val playerData = PlayerCache.creatingMode[player.uniqueId]
         val name = playerData?.keys?.firstOrNull()
         val permission = playerData?.values?.firstOrNull()
