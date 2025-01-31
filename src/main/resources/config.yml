@@ -1,0 +1,12 @@
+prefix: "<yellow>[SecurityCamera]</yellow> "
+
+messages:
+  no-permission: "<red>You don't have enough permission!</red>"
+  not-exist: "<red>Selected camera doesn't exist!</red>"
+  camera-exists: "<red>A camera with this name already exist!</red>"
+  how-to: "<green>You've entered Creating Mode! Please select a point in the roof where you would like the camera to be!</green>"
+  already-creating: "<red>You are already in creating mode!</red>"
+  exited: "<green>You have successfully exited creating mode!</green>"
+  created: "<green>Successfully created a new camera!</green>"
+  deleted: "<green>Camera successfully deleted!</green>"
+  available-cams: "<green>List of available cameras:</green>"
