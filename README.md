@@ -55,7 +55,7 @@ securitycamera:
 To create a camera, an admin or authorized player can use the following command:
 
 ```
-/camera create [camera_name]
+/createcamera [camera_name]
 ```
 
 This will create a camera at the player's current location. The camera name must be unique. You can also set specific properties for the camera (such as its location or name) in the plugin's configuration.
