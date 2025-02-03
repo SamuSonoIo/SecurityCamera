@@ -10,3 +10,4 @@ messages:
   created: "<green>Successfully created a new camera!</green>"
   deleted: "<green>Camera successfully deleted!</green>"
   available-cams: "<green>List of available cameras:</green>"
+  shift-to-exit: "<yellow>ᴘʀᴇѕѕ [ѕʜɪꜰᴛ] ᴛᴏ ᴇxɪᴛ!</yellow>"

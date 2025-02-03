@@ -1,7 +1,5 @@
 package org.samu.securityCamera.commands
 
-import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.samu.securityCamera.SecurityCamera
 import org.samu.securityCamera.dsl.toMini
@@ -9,8 +7,8 @@ import org.samu.securityCamera.manager.ConfigManager
 import org.samu.securityCamera.manager.cache.CameraCache
 import org.samu.securityCamera.manager.cache.PlayerCache
 import revxrsal.commands.annotation.Command
+import revxrsal.commands.annotation.Default
 import revxrsal.commands.annotation.Description
-import revxrsal.commands.annotation.Optional
 
 class CameraCommand {
     /**
@@ -36,7 +34,7 @@ class CameraCommand {
      */
     @Command("camera")
     @Description("Watch a camera or see the list of all available ones")
-    fun camera(sender: Player, @Optional name: String? = null) {
+    fun camera(sender: Player, @Default(" ") name: String) {
 
         /**
          * If the player is watching,
@@ -53,7 +51,7 @@ class CameraCommand {
          * a list of available cameras.
          * Scenario A.
          */
-        if (name.isNullOrBlank() && !PlayerCache.isWatching(sender)) {
+        if (name.isBlank() && !PlayerCache.isWatching(sender)) {
             sender.sendMessage(ConfigManager.readString("messages.available-cams"))
             CameraCache.cameras.keys.forEach { camera ->
                 if (sender.hasPermission(camera.permission)) sender.sendMessage("<white>- ${camera.name} </white>".toMini())
@@ -68,25 +66,6 @@ class CameraCommand {
 
         /** Scenario D */
         if (!sender.hasPermission(camera.permission)) sender.sendMessage(ConfigManager.readString("messages.no-permission"))
-
-        /**
-         * Location of the camera, just
-         * Creating a new one, since we
-         * directly don't save the Location
-         * but only:
-         * - X
-         * - Y
-         * - Z
-         * - WORLD
-         */
-        val location = Location(
-            Bukkit.getWorld(camera.world)!!,
-            camera.x,
-            camera.y,
-            camera.z,
-            0f,
-            0f
-        )
 
         /**
          * After all the checks above,

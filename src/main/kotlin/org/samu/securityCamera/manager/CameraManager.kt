@@ -4,14 +4,21 @@ import gg.flyte.twilight.extension.freeze
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.profile.PlayerProfile
 import org.samu.securityCamera.SecurityCamera
 import org.samu.securityCamera.manager.cache.CameraCache
 import org.samu.securityCamera.manager.cache.PlayerCache
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.UUID
 
 data class Camera(
     val id: Int,
@@ -19,6 +26,8 @@ data class Camera(
     val x: Double,
     val y: Double,
     val z: Double,
+    val yaw: Float,
+    val pitch: Float,
     val world: String,
     val permission: String = ""
 )
@@ -42,12 +51,14 @@ class CameraManager {
         x: Double,
         y: Double,
         z: Double,
+        yaw: Float,
+        pitch: Float,
         world: String,
         permission: String = "",
         shouldWrite: Boolean = false
     ): Camera? {
         val id = CameraCache.cameras.size + 1
-        val camera = Camera(id, name, x, y, z, world, permission)
+        val camera = Camera(id, name, x, y, z, yaw, pitch, world, permission)
         val entity = this.createEntity(camera)
 
         if (entity == null) {
@@ -85,7 +96,7 @@ class CameraManager {
         val cameras = FileManager.readData()
 
         cameras.forEach { camera ->
-            createCamera(camera.name, camera.x, camera.y, camera.z, camera.world, camera.permission, false)
+            createCamera(camera.name, camera.x, camera.y, camera.z, camera.yaw, camera.pitch, camera.world, camera.permission, false)
         }
 
         Bukkit.getLogger().info("Loaded cameras: ${cameras.size}")
@@ -106,15 +117,14 @@ class CameraManager {
 
         PlayerCache.addWatching(sender, camera)
         sender.gameMode = GameMode.SPECTATOR
-        sender.teleport(Location(Bukkit.getWorld(camera.world), camera.x, camera.y, camera.z))
-
-        entity.addPassenger(sender)
+        sender.teleport(Location(Bukkit.getWorld(camera.world), camera.x, camera.y, camera.z, camera.yaw, camera.pitch))
+        sender.spectatorTarget = cameraEntry.value
     }
 
     /**
      * Stop the player from watching whatever
      * camera he is in, this is a method
-     * since it's called in DismountEvent
+     * since it's called in SneakEvent
      * and in the CameraCommand.
      *
      * @param sender Player you want to remove from the camera.
@@ -122,12 +132,9 @@ class CameraManager {
     fun stopWatching(sender: Player) {
         val watchingCameraData = PlayerCache.watchingCams[sender.uniqueId]
         val location = watchingCameraData!!.oldLocation
-        val camera = watchingCameraData.camera
 
+        sender.spectatorTarget = null
         sender.gameMode = GameMode.SURVIVAL
-
-        val cameraEntry = CameraCache.cameras.entries.find { it.key.id == camera.id }
-        cameraEntry?.value?.removePassenger(sender)
 
         sender.teleport(location)
 
@@ -153,9 +160,27 @@ class CameraManager {
         val entity = world.spawnEntity(location, EntityType.ARMOR_STAND) as ArmorStand
 
         entity.setGravity(false)
+        entity.isInvisible = true;
         entity.freeze()
         val customModelDataKey = NamespacedKey(SecurityCamera.INSTANCE, "security_camera")
 
+        val item = ItemStack(Material.PLAYER_HEAD)
+        val meta:SkullMeta = item.itemMeta as SkullMeta
+        val profile:PlayerProfile = Bukkit.createPlayerProfile(UUID.randomUUID())
+        val texture = profile.textures
+
+        try {
+            texture.skin = URL("http://textures.minecraft.net/texture/${"6cb6118b11e056466a5c6c5dc5eb926f74a50d56949b1c234aaec399d1a48db3"}")
+        } catch(e: MalformedURLException) {
+            Bukkit.getLogger().warning("Failed to load texture: ${e.localizedMessage}")
+            e.printStackTrace()
+        }
+
+        profile.setTextures(texture)
+        meta.ownerProfile = profile
+        item.itemMeta = meta
+
+        entity.equipment.helmet = item
         entity.persistentDataContainer.set(customModelDataKey, PersistentDataType.INTEGER, camera.id)
 
         return entity

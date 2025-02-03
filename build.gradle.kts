@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     kotlin("jvm") version "2.0.21"
     id("io.papermc.paperweight.userdev") version "1.7.1"
@@ -72,18 +74,24 @@ tasks {
     }
 }
 
-kotlin {
-    compilerOptions {
-        javaParameters = true
-    }
-}
-
 tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
     javaLauncher = javaToolchains.launcherFor {
         vendor = JvmVendorSpec.JETBRAINS
         languageVersion = JavaLanguageVersion.of(17)
     }
     jvmArgs("-XX:+AllowEnhancedClassRedefinition", "-Xmx3G")
+}
+
+kotlin {
+    compilerOptions {
+        javaParameters = true
+    }
+}
+
+tasks.withType<KotlinJvmCompile> {
+    compilerOptions {
+        javaParameters = true
+    }
 }
 
 bukkit {

@@ -5,14 +5,14 @@ import org.samu.securityCamera.manager.ConfigManager
 import org.samu.securityCamera.manager.cache.CameraCache
 import org.samu.securityCamera.manager.cache.PlayerCache
 import revxrsal.commands.annotation.Command
+import revxrsal.commands.annotation.Default
 import revxrsal.commands.annotation.Description
-import revxrsal.commands.annotation.Optional
 
 class CreateCommand {
 
     @Command("createcamera")
     @Description("Creates a new camera, Staff only!")
-    fun createCameraCommand(sender: Player,@Optional name: String, @Optional permission: String) {
+    fun createCameraCommand(sender: Player, name: String, @Default(" ") permission: String) {
 
         if (!sender.hasPermission("securitycamera.create")) return sender.sendMessage(ConfigManager.readString("messages.no-permission"))
 
