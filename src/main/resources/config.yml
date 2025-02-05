@@ -1,5 +1,7 @@
 prefix: "<yellow>[SecurityCamera]</yellow> "
 
+# List of default messages you can edit how you want,
+# For a complete list of Tags, check MiniMessage documentation.
 messages:
   no-permission: "<red>You don't have enough permission!</red>"
   not-exist: "<red>Selected camera doesn't exist!</red>"
@@ -9,5 +11,15 @@ messages:
   exited: "<green>You have successfully exited creating mode!</green>"
   created: "<green>Successfully created a new camera!</green>"
   deleted: "<green>Camera successfully deleted!</green>"
-  available-cams: "<green>List of available cameras:</green>"
-  shift-to-exit: "<yellow>ᴘʀᴇѕѕ [ѕʜɪꜰᴛ] ᴛᴏ ᴇxɪᴛ!</yellow>"
+  missed-argument-camera: "<red>Invalid usage! Correct: /camera <name>. To see a list of available cameras, use </red><yellow><bold>/cameras</bold></yellow>"
+  missed-argument-createcamera: "<red>Invalid usage! Correct: /createcamera <name> [description].</red>"
+  missed-argument-removecamera: "<red>Invalid usage! Correct: /removecamera <name>.</red>"
+  shift-to-exit: "%NOPREFIX%<yellow><bold>DATE: %DATE% | CAMERA-NAME: %CAMERA% | [SHIFT] TO EXIT</bold>!</yellow>"
+
+# Length of the GUI of camera lists,
+# Default is 9, you can ONLY use
+# multiples of 9 between 9 and 54.
+gui-length: 9
+
+# Title of the gui of /cameras command
+gui-title: "<yellow><bold>AVAILABLE CAMERAS</bold></yellow>"

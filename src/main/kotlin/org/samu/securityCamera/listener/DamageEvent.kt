@@ -8,7 +8,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.persistence.PersistentDataType
 import org.samu.securityCamera.SecurityCamera
 
-class EntityDamage {
+class DamageEvent {
     /**
      * Let's check if the Entity that the player hit
      * is an ArmorStand, if so we cancel the event so the Armor Stand

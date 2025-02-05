@@ -6,11 +6,13 @@ import org.bukkit.entity.ArmorStand
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType
 import org.samu.securityCamera.SecurityCamera
-import org.samu.securityCamera.manager.ConfigManager
+import org.samu.securityCamera.manager.config.ConfigManager
 import org.samu.securityCamera.manager.cache.PlayerCache
+import org.samu.securityCamera.manager.config.Messages
+import kotlin.math.atan2
 
 
-class InteractListener {
+class InteractEvent {
 
     /**
      * Here we check if the player is in creating mode, if it is
@@ -26,20 +28,25 @@ class InteractListener {
         }
 
         if (PlayerCache.isInCreatingMode(player.uniqueId)) {
-            val location = clickedBlock?.location?.clone()?.apply { y -= 2 }!!
-            location.yaw = (player.location.yaw * -1)
+            val location = clickedBlock?.location?.toCenterLocation()?.clone()!!
+            location.y -= 2.5
+            location.yaw = Math.toDegrees(
+                atan2(
+                    player.location.z - location.z,
+                    player.location.x - location.x
+                )
+            ).toFloat() - 90
             val playerData = PlayerCache.creatingMode[player.uniqueId]
             val name = playerData?.keys?.firstOrNull()
             val permission = playerData?.values?.firstOrNull()
 
-            SecurityCamera.cameraManager.createCamera(name!!,location.x,location.y, location.z, location.yaw, location.pitch,location.world.name, permission!!, true)
+            SecurityCamera.cameraManager.createCamera(name!!,location.x,location.y, location.z, location.yaw, 0f, location.world.name, permission!!, true)
             PlayerCache.removeCreatingMode(player.uniqueId)
-            player.sendMessage(ConfigManager.readString("messages.created"))
+            player.sendMessage(Messages.CREATED.message())
         }
 
         if (clickedBlock is ArmorStand) {
             val armorStand =  clickedBlock as ArmorStand
-            println("This is an armor stand!")
             val customModelDataKey = NamespacedKey(SecurityCamera.INSTANCE, "security_camera")
 
             if (armorStand.persistentDataContainer.has(customModelDataKey, PersistentDataType.INTEGER)) isCancelled = true

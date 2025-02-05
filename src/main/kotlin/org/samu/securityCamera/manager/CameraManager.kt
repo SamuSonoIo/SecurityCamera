@@ -1,24 +1,23 @@
 package org.samu.securityCamera.manager
 
 import gg.flyte.twilight.extension.freeze
-import org.bukkit.Bukkit
-import org.bukkit.GameMode
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
+import gg.flyte.twilight.extension.removeActivePotionEffects
+import org.bukkit.*
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.profile.PlayerProfile
 import org.samu.securityCamera.SecurityCamera
 import org.samu.securityCamera.manager.cache.CameraCache
 import org.samu.securityCamera.manager.cache.PlayerCache
 import java.net.MalformedURLException
 import java.net.URL
-import java.util.UUID
+import java.util.*
 
 data class Camera(
     val id: Int,
@@ -113,12 +112,13 @@ class CameraManager {
     fun watchCamera(sender: Player, cameraId: Int) {
         val cameraEntry = CameraCache.cameras.entries.find { it.key.id == cameraId }!!
         val camera = cameraEntry.key
-        val entity = cameraEntry.value
-
+        if (!sender.hasPermission(camera.permission)) return
         PlayerCache.addWatching(sender, camera)
         sender.gameMode = GameMode.SPECTATOR
         sender.teleport(Location(Bukkit.getWorld(camera.world), camera.x, camera.y, camera.z, camera.yaw, camera.pitch))
-        sender.spectatorTarget = cameraEntry.value
+        Bukkit.getScheduler().runTaskLater(SecurityCamera.INSTANCE, Runnable {
+            sender.spectatorTarget = cameraEntry.value
+        }, 5)
     }
 
     /**
@@ -155,7 +155,7 @@ class CameraManager {
             return null
         }
 
-        val location = Location(world, camera.x, camera.y, camera.z)
+        val location = Location(world, camera.x, camera.y, camera.z, camera.yaw, camera.pitch)
 
         val entity = world.spawnEntity(location, EntityType.ARMOR_STAND) as ArmorStand
 

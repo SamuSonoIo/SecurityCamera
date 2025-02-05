@@ -1,20 +1,18 @@
 package org.samu.securityCamera.manager
 
 import gg.flyte.twilight.Twilight
-import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.samu.securityCamera.SecurityCamera
 import org.samu.securityCamera.SecurityCamera.Companion.cameraManager
 import org.samu.securityCamera.commands.CameraCommand
+import org.samu.securityCamera.commands.CamerasCommand
 import org.samu.securityCamera.commands.CreateCommand
 import org.samu.securityCamera.commands.RemoveCommand
 import org.samu.securityCamera.dsl.toMini
-import org.samu.securityCamera.listener.EntityDamage
-import org.samu.securityCamera.listener.InteractListener
-import org.samu.securityCamera.listener.PlayerMove
-import org.samu.securityCamera.listener.SneakEvent
+import org.samu.securityCamera.listener.*
 import org.samu.securityCamera.manager.cache.CameraCache
 import org.samu.securityCamera.manager.cache.PlayerCache
+import org.samu.securityCamera.manager.config.ConfigManager
 import revxrsal.commands.bukkit.BukkitLamp
 
 class ClassInitializer {
@@ -42,11 +40,14 @@ class ClassInitializer {
         lamp.register(CreateCommand())
         lamp.register(CameraCommand())
         lamp.register(RemoveCommand())
+        lamp.register(CamerasCommand())
 
-        InteractListener()
-        EntityDamage()
-        PlayerMove()
+        InteractEvent()
+        DamageEvent()
+        QuitEvent()
         SneakEvent()
+        GuiEvents()
+        MoveEvent()
 
         /**
          * Main Timer, we keep everything
@@ -54,15 +55,10 @@ class ClassInitializer {
          * around the code
          */
 
-        val messageExit:Component = SecurityCamera.INSTANCE.config.getString("messages.shift-to-exit")!!.toMini()
-
         Bukkit.getScheduler().runTaskTimer(SecurityCamera.INSTANCE, Runnable {
-            PlayerCache.watchingCams.keys.forEach { player ->
-                Bukkit.getPlayer(player)?.sendActionBar(messageExit)
-            }
-
-            CameraCache.cameras.values.forEach { camera ->
-                camera.location.chunk.load()
+            PlayerCache.watchingCams.keys.forEach { uuid ->
+                val player = Bukkit.getPlayer(uuid)
+                // Action Bar soon.
             }
         }, 0, 20)
     }

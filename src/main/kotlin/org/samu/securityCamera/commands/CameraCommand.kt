@@ -2,12 +2,11 @@ package org.samu.securityCamera.commands
 
 import org.bukkit.entity.Player
 import org.samu.securityCamera.SecurityCamera
-import org.samu.securityCamera.dsl.toMini
-import org.samu.securityCamera.manager.ConfigManager
+import org.samu.securityCamera.manager.config.ConfigManager
 import org.samu.securityCamera.manager.cache.CameraCache
 import org.samu.securityCamera.manager.cache.PlayerCache
+import org.samu.securityCamera.manager.config.Messages
 import revxrsal.commands.annotation.Command
-import revxrsal.commands.annotation.Default
 import revxrsal.commands.annotation.Description
 
 class CameraCommand {
@@ -16,8 +15,7 @@ class CameraCommand {
      * when executing this there are 5 scenarios:
      *
      * A:
-     *  - Player doesn't provide arguments, so we send him a list
-     *    of all available cameras.
+     *  - Player doesn't provide arguments, so we throw an error.
      * B:
      *  - Player provides a camera name, but it's invalid,
      *    so we send him an Error Message.
@@ -34,7 +32,7 @@ class CameraCommand {
      */
     @Command("camera")
     @Description("Watch a camera or see the list of all available ones")
-    fun camera(sender: Player, @Default(" ") name: String) {
+    fun camera(sender: Player, name: String) {
 
         /**
          * If the player is watching,
@@ -43,29 +41,22 @@ class CameraCommand {
          */
         if (PlayerCache.isWatching(sender)) SecurityCamera.cameraManager.stopWatching(sender)
 
-
         /**
          * If the first argument provided
          * is null or blank, and the player
          * is NOT watching, we send the player
-         * a list of available cameras.
+         * an error.
          * Scenario A.
          */
-        if (name.isBlank() && !PlayerCache.isWatching(sender)) {
-            sender.sendMessage(ConfigManager.readString("messages.available-cams"))
-            CameraCache.cameras.keys.forEach { camera ->
-                if (sender.hasPermission(camera.permission)) sender.sendMessage("<white>- ${camera.name} </white>".toMini())
-            }
-            return
-        }
+        if (name.isBlank() && !PlayerCache.isWatching(sender)) return sender.sendMessage(Messages.MISSED_ARGUMENT_CAMERA.message())
 
         val camera = CameraCache.cameras.keys.find { it.name == name }
 
         /** Scenario B */
-        if (camera == null) return sender.sendMessage(ConfigManager.readString("messages.not-exist"))
+        if (camera == null) return sender.sendMessage(Messages.NOT_EXIST.message())
 
         /** Scenario D */
-        if (!sender.hasPermission(camera.permission)) sender.sendMessage(ConfigManager.readString("messages.no-permission"))
+        if (!sender.hasPermission(camera.permission)) sender.sendMessage(Messages.NO_PERMISSION.message())
 
         /**
          * After all the checks above,

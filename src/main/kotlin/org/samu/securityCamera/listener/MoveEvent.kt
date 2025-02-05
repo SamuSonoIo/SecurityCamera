@@ -5,7 +5,7 @@ import org.bukkit.Location
 import org.bukkit.event.player.PlayerMoveEvent
 import org.samu.securityCamera.manager.cache.PlayerCache
 
-class PlayerMove  {
+class MoveEvent {
     val move = event<PlayerMoveEvent> {
         if (PlayerCache.isWatching(player)) {
             if (from.x != to.x || from.y != to.y || from.z != to.z) {
