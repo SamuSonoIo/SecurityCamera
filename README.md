@@ -1,4 +1,4 @@
-# SecurityCamera Plugin
+# SecurityCamera Plugin2
 
 The **SecurityCamera** plugin for Minecraft allows players with the appropriate permissions to create, manage, and interact with security cameras within the game. This plugin can be used for surveillance, watching different areas of the world, or simply as an immersive feature for roleplay servers.
 
